@@ -1,19 +1,60 @@
-class Guest:
-    def __init__(self, name, id, bring_list=None):
-        self.name = name
-        self.id = id
+from datetime import datetime
+
+
+class Event:
+    def __init__(self, guest_list, bring_list):
+        self.date = None
+        self.location = None
+        self.description = None
+        self.guest_list = guest_list
         self.bring_list = bring_list
 
-    def print_guests_bring_list(self):
-        print(f"{self.name}:")
-        for item in self.bring_list:
-            print(item.to_string())
+    def print_bring_list(self):
+        self.bring_list.print_bring_list()
+
+    def add_item_to_bring_list(self):
+        self.bring_list.add_item_to_bring_list()
+
+    def take_item_from_bring_list(self, guest_list):
+        self.bring_list.take_item_from_bring_list(guest_list)
+
+    def print_guests_items(self):
+        self.guest_list.print_guests_items()
+
+    def set_event_infos(self):
+        date = input("Gib das Datum und die Uhrzeit deines Events ein (Format: dd.mm.yy hh:mm):")
+        self.date = datetime.strptime(date, '%d.%m.%y %H:%M')
+        self.location = input("Gib die Adresse deines Events ein:")
+        self.description = input("Gib die Beschreibung deines Events ein:")
+
+    def print_event_infos(self):
+        print("Datum: ", self.date.strftime('%d.%m.%y'))
+        print("Uhrzeit: ", self.date.strftime('%H:%M Uhr'))
+        print("Ort: ", self.location)
+        print("Beschreibung: ", self.description)
 
 
-class Host:
+class User:
     def __init__(self, name, id):
         self.name = name
         self.id = id
+        self.guests_bring_list = None
+
+
+class Guest(User):
+    def __init__(self, name, id, guests_bring_list=None):
+        super().__init__(name, id)
+        self.guests_bring_list = guests_bring_list
+
+    def print_guests_bring_list(self):
+        print(f"{self.name}:")
+        for item in self.guests_bring_list:
+            print(item.to_string())
+
+
+class Host(User):
+    def __init__(self, name, id):
+        super().__init__(name, id)
 
 
 class BringList:
@@ -48,7 +89,7 @@ class BringList:
                 item.amount = item.amount - take_amount
                 if item.amount <= 0:
                     self.list.remove(item)
-                current_guest.bring_list.append(Item(item.name, item.amount + take_amount))
+                current_guest.guests_bring_list.append(Item(item.name, item.amount + take_amount))
                 break
 
 
@@ -59,7 +100,7 @@ class GuestList:
     def print_guests_items(self):
         print("\n")
         for guest in self.list:
-            if guest.bring_list is not None:
+            if guest.guests_bring_list is not None:
                 guest.print_guests_bring_list()
         print("\n")
 
